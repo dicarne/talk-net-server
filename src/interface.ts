@@ -42,7 +42,16 @@ export interface ControlEnterRoom extends ControlData {
   action: 'enter_room'
   id: uid
   room: string
+  room_name?: string
+  name: string
 }
+
+export interface ControlExitRoom extends ControlData {
+    action: 'exit_room'
+    id: uid
+    room: string
+    name: string
+  }
 
 export interface ControlLoginSuccess extends ControlData {
   action: 'login_success'

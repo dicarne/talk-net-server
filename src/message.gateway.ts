@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'dgram';
 import { Server } from 'http';
-import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom, ControlLoginSuccess } from './interface';
+import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom, ControlLoginSuccess, ControlExitRoom } from './interface';
 
 interface Client extends Socket {
   id: string
@@ -97,6 +97,9 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         } else {
           this.talkers.get(c.id).session = client;
         }
+        client.emit('control', {
+          action: 'login_success'
+        } as ControlLoginSuccess)
       }
         break;
       case 'enter_room': {
@@ -111,9 +114,15 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         r.talkers.add(c.id)
         const t = this.talkers.get(c.id)
         t.rooms.add(c.room)
-        client.emit('control', {
-          action: 'login_success'
-        } as ControlLoginSuccess)
+        r.talkers.forEach(tk => {
+          this.talkers.get(tk)?.session.emit('control', {
+            action: 'enter_room',
+            id: c.id,
+            room: c.room,
+            room_name: r.name,
+            name: t.name
+          } as ControlEnterRoom)
+        })
       }
         break;
       default:
@@ -130,14 +139,12 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     r.talkers.delete(talker)
     const t = this.talkers.get(talker)
     r.talkers.forEach(v => {
-      this.talkers.get(v).session.emit('message', {
-        type: 'e',
-        detail: 'exit_room',
-        target: {
-          id: talker,
-          name: t.name
-        }
-      } as ExitRoomMessage)
+      this.talkers.get(v).session.emit('control', {
+        action: 'exit_room',
+        id: talker,
+        room: room,
+        name: t.name
+      } as ControlExitRoom)
     })
   }
 
