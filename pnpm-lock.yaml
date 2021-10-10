@@ -13,6 +13,7 @@ specifiers:
   '@types/jest': ^27.0.1
   '@types/node': ^16.0.0
   '@types/supertest': ^2.0.11
+  '@types/uuid': ^8.3.1
   '@typescript-eslint/eslint-plugin': ^4.28.2
   '@typescript-eslint/parser': ^4.28.2
   eslint: ^7.30.0
@@ -29,6 +30,7 @@ specifiers:
   ts-node: ^10.0.0
   tsconfig-paths: ^3.10.1
   typescript: ^4.3.5
+  uuid: ^8.3.2
 
 dependencies:
   '@nestjs/common': 8.0.11_ad16f1f28877c5242670873e13562245
@@ -39,6 +41,7 @@ dependencies:
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
   rxjs: 7.4.0
+  uuid: 8.3.2
 
 devDependencies:
   '@nestjs/cli': 8.1.2
@@ -48,6 +51,7 @@ devDependencies:
   '@types/jest': 27.0.2
   '@types/node': 16.10.3
   '@types/supertest': 2.0.11
+  '@types/uuid': 8.3.1
   '@typescript-eslint/eslint-plugin': 4.33.0_d753869925cce96d3eb2141eeedafe57
   '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.4.3
   eslint: 7.32.0
@@ -1149,6 +1153,10 @@ packages:
     resolution: {integrity: sha512-uci4Esokrw9qGb9bvhhSVEjd6rkny/dk5PK/Qz4yxKiyppEI+dOPlNrZBahE3i+PoKFYyDxChVXZ/ysS/nrm1Q==}
     dependencies:
       '@types/superagent': 4.1.13
+    dev: true
+
+  /@types/uuid/8.3.1:
+    resolution: {integrity: sha512-Y2mHTRAbqfFkpjldbkHGY8JIzRN6XqYRliG8/24FcHm2D2PwW24fl5xMRTVGdrb7iMrwCaIEbLWerGIkXuFWVg==}
     dev: true
 
   /@types/yargs-parser/20.2.1:
