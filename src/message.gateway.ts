@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'dgram';
 import { Server } from 'http';
-import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom } from './interface';
+import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom, ControlLoginSuccess } from './interface';
 
 interface Client extends Socket {
   id: string
@@ -60,6 +60,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
               type: 'text',
               id: data.id,
               name: sender.name,
+              time: new Date,
               data: {
                 room: d.data.room,
                 text: d.data.text
@@ -110,7 +111,11 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         r.talkers.add(c.id)
         const t = this.talkers.get(c.id)
         t.rooms.add(c.room)
+        client.emit('control', {
+          action: 'login_success'
+        } as ControlLoginSuccess)
       }
+        break;
       default:
         break;
     }
