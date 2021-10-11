@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'dgram';
 import { Server } from 'http';
-import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom, ControlLoginSuccess, ControlExitRoom } from './interface';
+import { uid, MessageData, TextMessage, ControlData, ControlConnect, ExitRoomMessage, ControlEnterRoom, ControlLoginSuccess, ControlExitRoom, ControlAskOnlineUsers, ControlRespOnlineUsers } from './interface';
 
 interface Client extends Socket {
   id: string
@@ -125,6 +125,13 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         })
       }
         break;
+      case 'ask_online_users': {
+        const c = data as ControlAskOnlineUsers
+        const r = this.rooms.get(c.room)
+        if (r) {
+          client.emit('control', { count: r.talkers.size, action: 'resp_online_users', room: c.room } as ControlRespOnlineUsers)
+        }
+      } break;
       default:
         break;
     }

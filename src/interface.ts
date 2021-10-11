@@ -56,3 +56,14 @@ export interface ControlExitRoom extends ControlData {
 export interface ControlLoginSuccess extends ControlData {
   action: 'login_success'
 }
+
+export interface ControlAskOnlineUsers extends ControlData {
+  action: 'ask_online_users'
+  room: string
+}
+
+export interface ControlRespOnlineUsers extends ControlData {
+  action: 'resp_online_users'
+  room: string
+  count: number
+}
