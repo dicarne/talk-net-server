@@ -9,7 +9,7 @@ interface Client extends Socket {
 
 interface Talker {
   id: string
-  session: Client
+  session: Map<string, Client>
   name: string
   rooms: Set<string>
 }
@@ -51,18 +51,18 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     switch (data.type) {
       case 'text':
         const d = data as TextMessage
-        const r = this.rooms.get(d.data.room)
+        const r = this.rooms.get(d.room)
         const sender = this.talkers.get(d.id)
         r.talkers.forEach(t => {
           if (true || t != d.id) {
             const ti = this.talkers.get(t)
-            ti.session.emit('message', {
+            ti.session.get(d.room).emit('message', {
               type: 'text',
               id: data.id,
               name: sender.name,
               time: new Date,
+              room: d.room,
               data: {
-                room: d.data.room,
                 text: d.data.text
               }
             } as TextMessage)
@@ -88,17 +88,20 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         const c = data as ControlConnect
         this.clients.set(client.id, c.id)
         if (!this.talkers.has(c.id)) {
-          this.talkers.set(c.id, {
+          const t: Talker = {
             id: c.id,
-            session: client,
+            session: new Map(),
             name: c.name,
             rooms: new Set()
-          })
+          }
+          t.session.set(data.room, client)
+          this.talkers.set(c.id, t)
         } else {
-          this.talkers.get(c.id).session = client;
+          this.talkers.get(c.id).session.set(data.room, client);
         }
         client.emit('control', {
-          action: 'login_success'
+          action: 'login_success',
+          room: data.room
         } as ControlLoginSuccess)
       }
         break;
@@ -115,7 +118,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         const t = this.talkers.get(c.id)
         t.rooms.add(c.room)
         r.talkers.forEach(tk => {
-          this.talkers.get(tk)?.session.emit('control', {
+          this.talkers.get(tk)?.session.get(c.room).emit('control', {
             action: 'enter_room',
             id: c.id,
             room: c.room,
@@ -146,7 +149,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     r.talkers.delete(talker)
     const t = this.talkers.get(talker)
     r.talkers.forEach(v => {
-      this.talkers.get(v).session.emit('control', {
+      this.talkers.get(v).session.get(room).emit('control', {
         action: 'exit_room',
         id: talker,
         room: room,

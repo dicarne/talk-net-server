@@ -4,6 +4,7 @@ export type uid = string
 export interface MessageData {
   type: 'text' | 'img' | 'r' | 'e'
   id: uid
+  room: string
 }
 
 export interface ExitRoomMessage extends MessageData {
@@ -20,7 +21,6 @@ export interface TextMessage extends MessageData {
   name: string
   time: Date
   data: {
-    room: string
     text: string
   }
 }
@@ -29,6 +29,7 @@ export interface TextMessage extends MessageData {
 
 export interface ControlData {
   action: string
+  room: string
 }
 
 
@@ -41,17 +42,15 @@ export interface ControlConnect extends ControlData {
 export interface ControlEnterRoom extends ControlData {
   action: 'enter_room'
   id: uid
-  room: string
   room_name?: string
   name: string
 }
 
 export interface ControlExitRoom extends ControlData {
-    action: 'exit_room'
-    id: uid
-    room: string
-    name: string
-  }
+  action: 'exit_room'
+  id: uid
+  name: string
+}
 
 export interface ControlLoginSuccess extends ControlData {
   action: 'login_success'
@@ -59,11 +58,9 @@ export interface ControlLoginSuccess extends ControlData {
 
 export interface ControlAskOnlineUsers extends ControlData {
   action: 'ask_online_users'
-  room: string
 }
 
 export interface ControlRespOnlineUsers extends ControlData {
   action: 'resp_online_users'
-  room: string
   count: number
 }
